@@ -910,7 +910,8 @@ void processor_t::take_trap(trap_t& t, reg_t epc)
   } else {
     // Handle the trap in M-mode
     const reg_t vector = (state.mtvec->read() & 1) && interrupt ? 4 * bit : 0;
-    const reg_t trap_handler_address = (state.mtvec->read() & ~(reg_t)1) + vector;
+    //It ensures that the BASE field is aligned to 4 bytes.
+    const reg_t trap_handler_address = (state.mtvec->read() & ~(reg_t)3) + vector;
     // RNMI exception vector is implementation-defined.  Since we don't model
     // RNMI sources, the feature isn't very useful, so pick an invalid address.
     const reg_t rnmi_trap_handler_address = 0;

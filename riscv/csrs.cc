@@ -374,8 +374,8 @@ reg_t tvec_csr_t::read() const noexcept {
 }
 
 bool tvec_csr_t::unlogged_write(const reg_t val) noexcept {
-  //Preserve the MODE field and adhere to a 4-byte aligned BASE field.
-  this->val = val & ~(reg_t)0xe;
+  //The BASE field has been aligned to four bytes when obtaining the PC.gzhmodifyPR
+  this->val = val & ~(reg_t)2;
   return true;
 }
 
