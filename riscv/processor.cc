@@ -872,7 +872,8 @@ void processor_t::take_trap(trap_t& t, reg_t epc)
   if (state.prv <= PRV_S && bit < max_xlen && ((vsdeleg >> bit) & 1)) {
     // Handle the trap in VS-mode
     reg_t vector = (state.vstvec->read() & 1) && interrupt ? 4 * bit : 0;
-    state.pc = (state.vstvec->read() & ~(reg_t)1) + vector;
+    //It ensures that the BASE field is aligned to 4 bytes.
+    state.pc = (state.vstvec->read() & ~(reg_t)3) + vector;
     state.vscause->write((interrupt) ? (t.cause() - 1) : t.cause());
     state.vsepc->write(epc);
     state.vstval->write(t.get_tval());
@@ -886,7 +887,8 @@ void processor_t::take_trap(trap_t& t, reg_t epc)
   } else if (state.prv <= PRV_S && bit < max_xlen && ((hsdeleg >> bit) & 1)) {
     // Handle the trap in HS-mode
     reg_t vector = (state.nonvirtual_stvec->read() & 1) && interrupt ? 4 * bit : 0;
-    state.pc = (state.nonvirtual_stvec->read() & ~(reg_t)1) + vector;
+    //It ensures that the BASE field is aligned to 4 bytes.
+    state.pc = (state.nonvirtual_stvec->read() & ~(reg_t)3) + vector;
     state.nonvirtual_scause->write(t.cause());
     state.nonvirtual_sepc->write(epc);
     state.nonvirtual_stval->write(t.get_tval());
